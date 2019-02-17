@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+   www_1:
+      image: 'oldwebtoday/www'
+      build:
+        context: .
+        labels:
+            "wr.version": "1"
+            "wr.release": "2016-09-24"
+ 

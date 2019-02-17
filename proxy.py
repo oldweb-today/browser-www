@@ -1,6 +1,6 @@
 from bottle import request, route, HTTPResponse, run
 from argparse import ArgumentParser
-
+import urlparse
 import requests
 
 proxies = 'localhost'
@@ -19,18 +19,15 @@ def do_default():
 @route(['/<dt:re:[0-9]+([\w]{2}_)?>/<url:re:.*>', '/<url:re:.*>'])
 def do_proxy(dt='', url=''):
     headers = {'User-Agent': request.environ.get('HTTP_USER_AGENT'),
-               #'Host': proxy_host,
                'Accept-Encoding': 'identity',
-               'Pywb-Rewrite-Prefix': proxy_prefix,
               }
 
     if not url.startswith('http://'):
-        url = 'http://' + url
+        url = urlparse.urljoin(start_url, url)
 
     r = requests.get(url=url, headers=headers,
                      stream=True,
-                     allow_redirects=False,
-                     proxies=proxies)
+                     allow_redirects=False)
 
     resp_headers = []
     for n, v in r.headers.iteritems():
@@ -72,7 +69,7 @@ if __name__ == "__main__":
     global start_url
     start_url = r.start_url
 
-    port = r.port or 8081
+    port = r.port or 80
 
     run(host='0.0.0.0', port=port)
 
